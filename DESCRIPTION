@@ -1,0 +1,17 @@
+Package: TManalyzer
+Type: Package
+Title: Provides IR tools in 3 text mining models: BVSM, GVSM(TT) and LSA
+Version: 0.5.0
+Authors@R: person("Lukas", "Borke", email = "lukas.borke@hu-berlin.de", role = c("aut", "cre"))
+Maintainer: Lukas Borke <lukas@borke.net>
+Description: Combines 3 common text mining models BVSM, GVSM(TT) and LSA for information retrieval analysis.
+    After extracting the weighted data fields from a structured list (parsed from YAML or DCF text documents), the text corpus
+    is transformed into 3 models. The search queries can be embedded into the appropriate models, the desired similarity method
+    from the "proxy" package can be applied and an comprehensive IR analysis can be performed.
+License: MIT + file LICENSE
+Imports:
+    tm,
+    lsa,
+    proxy,
+    xtable
+LazyData: TRUE
