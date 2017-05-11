@@ -1,44 +1,43 @@
 
 
-yaml.list.extract = function(yaml_list, weight = NULL, keywords_spaces = TRUE) {
+
+meta.list.extract = function(meta_list, doc_names, meta_dfield_list = NULL, meta_weight = NULL) {
 	t_vec = vector()
-	conf  = names(weight)
-  
-	for (i in 1:length(yaml_list)) {
-		info = ""
-		yaml_meta = yaml_list[[i]]
-		
-		if (is.null(weight)) {
-			# serializes the parsed yaml obj (associated list) to a big single string, for further TM analysis
-			info = paste(unlist(yaml_meta), collapse = " ")
-		} else {
-		
-			keywords = yaml.getQField(yaml_meta, "k")
-			if (keywords_spaces) {
-				keywords = gsub("-", " ", keywords)
-			}
-		
-			if ("q" %in% conf) {info = paste(info, paste(rep(yaml.getQField(yaml_meta, "q"), weight[["q"]]), collapse = ", "))}
-			if ("d" %in% conf) {info = paste(info, paste(rep(yaml.getQField(yaml_meta, "d"), weight[["d"]]), collapse = ", "))}
-			if ("k" %in% conf) {info = paste(info, paste(rep(keywords, weight[["k"]]), collapse = ", "))}
-			if ("a" %in% conf) {info = paste(info, paste(rep(yaml.getQField(yaml_meta, "a"), weight[["a"]]), collapse = ", "))}
-			if ("df"%in% conf) {info = paste(info, paste(rep(yaml.getQField(yaml_meta, "df"), weight[["df"]]), collapse = ", "))}
-			if ("sa" %in% conf){info = paste(info, paste(rep(yaml.getQField(yaml_meta, "sa"), weight[["sa"]]), collapse = ", "))}
-			if ("s" %in% conf) {info = paste(info, paste(rep(yaml.getQField(yaml_meta, "s"), weight[["s"]]), collapse = ", "))}
-			if ("e" %in% conf) {info = paste(info, paste(rep(yaml.getQField(yaml_meta, "e"), weight[["e"]]), collapse = ", "))}
-			# raw meta info
-			if ("p" %in% conf) {info = paste(info, paste(rep(yaml_meta$path, weight[["p"]]), collapse = ", "))}
-		}
-		t_vec = c(t_vec, info)
+
+	if ( xor(is.null(meta_dfield_list), is.null(meta_weight)) ) {
+		stop("'meta_dfield_list' and 'meta_weight' arguments must be set or not set simultaneously!")
 	}
 	
-	q_names = sapply( yaml_list, function(y){ yaml.getQField(y, "q") } )
+	if ( !is.null(meta_dfield_list) & !is.null(meta_weight) & !all(names(meta_weight) %in% names(meta_dfield_list)) ) {
+		stop("'meta_dfield_list' and 'meta_weight' are not compatible!")
+	}
+		
+	# if (all(names(meta_weight) %in% names(cran_dfield_list))) {stop("ok")}
+  
+	for (i in 1:length(meta_list)) {
+		tm_text = ""
+		meta = meta_list[[i]]
+		
+		if (is.null(meta_weight)) {
+			# serializes the parsed obj (associated list) to a big single string, for further TM analysis
+			tm_text = paste(unlist(meta), collapse = " ")
+		} else {
+			
+			for (dname in names(meta_weight)) {
+				temp = paste(rep(meta.getDField(meta, meta_dfield_list, dname), meta_weight[[dname]]), collapse = ", ")
+				tm_text = paste(tm_text, temp)
+			}
+
+		}
+		t_vec = c(t_vec, tm_text)
+	}
 	
 	res = list()
 	res$t_vec = t_vec
-	res$q_names = q_names
+	res$doc_names = doc_names
 	return(res)
 }
+
 
 
 
@@ -72,7 +71,6 @@ cleanCorpus = function(corpus, stopwords_list_selected) {
 	corpus.tmp <- tm_map(corpus.tmp, content_transformer(tolower))
 	corpus.tmp <- tm_map(corpus.tmp, stemDocument)
 	corpus.tmp <- tm_map(corpus.tmp, removeWords, stopwords_list_selected)
-	#corpus.tmp <- tm_map(corpus.tmp, stripWhitespace)
 	return(corpus.tmp)
 }
 
@@ -97,7 +95,7 @@ tm.create.models = function(meta_vec, stopwords_select = "qn", tf_trim = 2, tf_w
 	## Models
 	# Basis Model: BVSM
 	m_a = as.matrix(tdm_tf_trimmed_weighted)
-	colnames(m_a) = meta_vec$q_names
+	colnames(m_a) = meta_vec$doc_names
 	print(paste("Dim TDM:", paste(dim(m_a), collapse = ",")))
 	tm_res = list()
 	tm_res$b = t(m_a)
@@ -269,7 +267,3 @@ query.similar.doc.inspect = function(sim_tm_obj, sim_threshold = 0.7, digits_rou
 	
 	return(res)
 }
-
-
-
-

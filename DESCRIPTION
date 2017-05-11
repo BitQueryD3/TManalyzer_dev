@@ -1,7 +1,7 @@
 Package: TManalyzer
 Type: Package
 Title: Provides IR tools in 3 text mining models: BVSM, GVSM(TT) and LSA
-Version: 0.5.0
+Version: 0.6.0
 Authors@R: person("Lukas", "Borke", email = "lukas.borke@hu-berlin.de", role = c("aut", "cre"))
 Maintainer: Lukas Borke <lukas@borke.net>
 Description: Combines 3 common text mining models BVSM, GVSM(TT) and LSA for information retrieval analysis.
@@ -13,5 +13,6 @@ Imports:
     tm,
     lsa,
     proxy,
-    xtable
+    xtable,
+    stringr
 LazyData: TRUE
