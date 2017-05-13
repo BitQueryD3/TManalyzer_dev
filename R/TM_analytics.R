@@ -75,7 +75,7 @@ cleanCorpus = function(corpus, stopwords_list_selected) {
 }
 
 
-tm.create.models = function(meta_vec, stopwords_select = "qn", tf_trim = 2, tf_weight = "nnc",
+tm.create.models = function(meta_vec, stopwords_select = "qn", add_stopwords = vector(), tf_trim = 2, tf_weight = "nnc",
 							models = c("tt", "lsa", "lsa_spec"), lsa_dim = 50 ) {
 
 	stopwords_list = list()
@@ -85,7 +85,7 @@ tm.create.models = function(meta_vec, stopwords_select = "qn", tf_trim = 2, tf_w
 	stopwords_list_selected = stopwords_list[[stopwords_select]]
 	
 	t = VCorpus(VectorSource(meta_vec$t_vec))
-	t.cl  = cleanCorpus(t, stopwords_list_selected)
+	t.cl  = cleanCorpus(t, c(stopwords_list_selected, add_stopwords))
 
 	## Trimming and weighting
 	# For Yaml: discard tf <= 2
