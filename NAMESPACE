@@ -1,3 +1,6 @@
 exportPattern("^[[:alpha:]]+")
 importFrom("xtable", "xtable")
-import(tm, lsa, proxy, stringr)
+importFrom("grDevices", "dev.new")
+importFrom("graphics", "legend", "plot", "text")
+importFrom("stats", "cmdscale", "kmeans")
+import(tm, lsa, proxy, stringr, jsonlite, cluster)
